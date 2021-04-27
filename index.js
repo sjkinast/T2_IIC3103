@@ -28,6 +28,11 @@ app.use('/albums', albumsRoute);
 
 app.use('/tracks', tracksRoute);
 
+app.get('/', (req,res, next) => {
+    res.sendStatus(200);
+    next();
+});
+
 //CONNECT TO DB
 mongoose.connect(process.env.DB_CONNECTION,
 { useNewUrlParser: true, useUnifiedTopology: true },
