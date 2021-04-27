@@ -34,10 +34,16 @@ app.get('/', (req,res, next) => {
 });
 
 //CONNECT TO DB
-mongoose.connect(process.env.DB_CONNECTION,
-{ useNewUrlParser: true, useUnifiedTopology: true },
-() => console.log('Connected to DB'),
-);
+try {
+    mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true });
+    console.log('Connected to DB');
+} catch (err) {
+    console.log(err.message);
+}
+// mongoose.connect(process.env.DB_CONNECTION,
+// { useNewUrlParser: true, useUnifiedTopology: true },
+// () => console.log('Connected to DB'),
+// );
 
 
 // PORT & HOST
