@@ -36,12 +36,19 @@ app.get('/', (req,res, next) => {
 //CONNECT TO DB
 mongoose.connect(process.env.DB_CONNECTION,
 { useNewUrlParser: true, useUnifiedTopology: true },
-() => console.log('Connected to DB'),
-);
+(err) => {
+    if (err) {
+        console.error('App starting error:', err.stack);
+        process.exit(1);
+    } else {
+        console.log('Connected to DB');
+    }
+
+});
 
 
 // PORT & HOST
 const port  = process.env.PORT || 3000;
-const host = process.env.HOST || '0.0.0.0';
+const host = process.env.HOST || '8.8.8.8';
 
 app.listen(port,host, () => console.log(`Listening on port ${port}...`));
