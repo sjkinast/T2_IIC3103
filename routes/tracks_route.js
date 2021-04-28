@@ -4,21 +4,28 @@ const Track = require('../models/Track');
 
 
 // GET METHODS
+
+// /tracks
 router.get('/', async (req, res) => {
     try {
         const tracks = await Track.find();
-        res.send(tracks);
+        res.status(200).send(tracks);
     } catch (err) {
-        res.status(404).send(err.message);
+        res.status(500).send({Error: err.message});
     }
 });
 
+// /tracks/<track_id>
 router.get('/:id', async (req, res) => {
     try {
         const track = await Track.findById(req.params.id);
-        res.send(track);
+        if (track) {
+            res.status(200).send(track);
+        } else {
+            res.status(404).send({description: 'canción no encontrada'});
+        }
     } catch (err) {
-        res.status(404).send(err.message);
+        res.status(500).send({Error: err.message});
     }
 });
 
