@@ -66,23 +66,28 @@ router.post('/:id/tracks', async (req, res) => {
         const album = await Album.findById(req.params.id);
         if (album) {
             const _id = Buffer.from(`${req.body.name}:${req.params.id}`).toString('base64').slice(0,22);
-            const track = new Track({
-                _id: _id,
-                name: req.body.name,
-                duration: req.body.duration,
-                timesPlayed: 0,
-                albumId: req.params.id,
-                artist: `/artists/${album.artistId}`,
-                album: `/albums/${req.params.id}`,
-                self: `/tracks/${_id}`,
-            });
-            const savedTrack = await track.save();
-            res.status(201).send(savedTrack);
+            const oldTrack = await Track.findById(_id);
+            if (oldTrack) {
+                res.status(409).send(oldTrack);
+            } else {
+                const track = new Track({
+                    _id: _id,
+                    name: req.body.name,
+                    duration: req.body.duration,
+                    timesPlayed: 0,
+                    albumId: req.params.id,
+                    artist: `/artists/${album.artistId}`,
+                    album: `/albums/${req.params.id}`,
+                    self: `/tracks/${_id}`,
+                });
+                const savedTrack = await track.save();
+                res.status(201).send(savedTrack);
+            }
         } else {
             res.status(422).send({description: 'álbum no existe'});
         }
     } catch (err) {
-        res.status(409).send({Error: 'canción ya existe'});
+        res.status(500).send({Error: err.message});
     }
 });
 

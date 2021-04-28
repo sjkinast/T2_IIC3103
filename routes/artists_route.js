@@ -83,21 +83,25 @@ router.post('/', async (req, res) => {
         res.status(400).send({description: 'input inválido'});
         return;
     }
-
-    const _id = Buffer.from(req.body.name).toString('base64').slice(0,22);
-    const artist = new Artist({
-        _id: _id,
-        name: req.body.name,
-        age: req.body.age,
-        self: `/artists/${_id}`,
-        albums: `/artists/${_id}/albums`,
-        tracks: `/artists/${_id}/tracks`,
-    });
-    try{
-        const savedArtist =  await artist.save();
-        res.status(201).send(savedArtist);
-    } catch(err){
-        res.status(409).send({ description: 'artista ya existe'});
+    try {
+        const oldArtist = await Artist.findById(req.params.id);
+        if (oldArtist) {
+            res.status(409).send(oldArtist);
+        } else {
+            const _id = Buffer.from(req.body.name).toString('base64').slice(0,22);
+            const artist = new Artist({
+                _id: _id,
+                name: req.body.name,
+                age: req.body.age,
+                self: `/artists/${_id}`,
+                albums: `/artists/${_id}/albums`,
+                tracks: `/artists/${_id}/tracks`,
+            });
+            const savedArtist =  await artist.save();
+            res.status(201).send(savedArtist);
+        }
+    } catch (err) {
+        res.status(500).send({Error: err.message});
     }
 });
 
@@ -112,22 +116,27 @@ router.post('/:id/albums', async (req,res) => {
         const artist = await Artist.findById(req.params.id);
         if (artist) {
             const _id = Buffer.from(`${req.body.name}:${req.params.id}`).toString('base64').slice(0,22);
-            const album = new Album({
-                _id: _id,
-                name: req.body.name,
-                genre: req.body.genre,
-                artistId: req.params.id,
-                self: `/albums/${_id}`,
-                artist: `/artists/${req.params.id}`,
-                tracks: `/albums/${_id}/tracks`,
-            });
-            const savedAlbum =  await album.save();
-            res.status(201).send(savedAlbum);
+            const oldAlbum  = await Album.findById(_id);
+            if (oldAlbum) {
+                res.status(409).send(oldAlbum);
+            } else {
+                const album = new Album({
+                    _id: _id,
+                    name: req.body.name,
+                    genre: req.body.genre,
+                    artistId: req.params.id,
+                    self: `/albums/${_id}`,
+                    artist: `/artists/${req.params.id}`,
+                    tracks: `/albums/${_id}/tracks`,
+                });
+                const savedAlbum =  await album.save();
+                res.status(201).send(savedAlbum);
+            }
         } else {
             res.status(422).send({description: 'artista no existe'});
         }
     } catch (err) {
-        res.status(409).send({description: 'álbum ya existe'});
+        res.status(500).send({Error: err.message});
     }
 });
 
