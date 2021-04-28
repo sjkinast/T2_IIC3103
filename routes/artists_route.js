@@ -84,11 +84,11 @@ router.post('/', async (req, res) => {
         return;
     }
     try {
-        const oldArtist = await Artist.findById(req.params.id);
+        const _id = Buffer.from(req.body.name).toString('base64').slice(0,22);
+        const oldArtist = await Artist.findById(_id);
         if (oldArtist) {
             res.status(409).send(oldArtist);
         } else {
-            const _id = Buffer.from(req.body.name).toString('base64').slice(0,22);
             const artist = new Artist({
                 _id: _id,
                 name: req.body.name,
