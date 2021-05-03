@@ -93,9 +93,9 @@ router.post('/', async (req, res) => {
                 _id: _id,
                 name: req.body.name,
                 age: req.body.age,
-                self: `/artists/${_id}`,
-                albums: `/artists/${_id}/albums`,
-                tracks: `/artists/${_id}/tracks`,
+                self: `${req.protocol}://${req.get('host')}/artists/${_id}`,
+                albums: `${req.protocol}://${req.get('host')}/artists/${_id}/albums`,
+                tracks: `${req.protocol}://${req.get('host')}/artists/${_id}/tracks`,
             });
             const savedArtist =  await artist.save();
             res.status(201).send(savedArtist);
@@ -125,9 +125,9 @@ router.post('/:id/albums', async (req,res) => {
                     name: req.body.name,
                     genre: req.body.genre,
                     artistId: req.params.id,
-                    self: `/albums/${_id}`,
-                    artist: `/artists/${req.params.id}`,
-                    tracks: `/albums/${_id}/tracks`,
+                    self: `${req.protocol}://${req.get('host')}/albums/${_id}`,
+                    artist: `${req.protocol}://${req.get('host')}/artists/${req.params.id}`,
+                    tracks: `${req.protocol}://${req.get('host')}/albums/${_id}/tracks`,
                 });
                 const savedAlbum =  await album.save();
                 res.status(201).send(savedAlbum);

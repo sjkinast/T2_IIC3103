@@ -76,9 +76,9 @@ router.post('/:id/tracks', async (req, res) => {
                     duration: req.body.duration,
                     timesPlayed: 0,
                     albumId: req.params.id,
-                    artist: `/artists/${album.artistId}`,
-                    album: `/albums/${req.params.id}`,
-                    self: `/tracks/${_id}`,
+                    artist: `${req.protocol}://${req.get('host')}/artists/${album.artistId}`,
+                    album: `${req.protocol}://${req.get('host')}/albums/${req.params.id}`,
+                    self: `${req.protocol}://${req.get('host')}/tracks/${_id}`,
                 });
                 const savedTrack = await track.save();
                 res.status(201).send(savedTrack);
